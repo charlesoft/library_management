@@ -10,9 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_04_211153) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_04_231259) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "book_borrowings", force: :cascade do |t|
+    t.bigint "book_id", null: false
+    t.bigint "user_id", null: false
+    t.date "borrowing_date", null: false
+    t.date "due_date", null: false
+    t.date "returned_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["book_id"], name: "index_book_borrowings_on_book_id"
+    t.index ["user_id"], name: "index_book_borrowings_on_user_id"
+  end
+
+  create_table "books", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "author", null: false
+    t.string "genre", null: false
+    t.string "isbn", null: false
+    t.integer "total_copies", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["author"], name: "index_books_on_author"
+    t.index ["genre"], name: "index_books_on_genre"
+    t.index ["isbn"], name: "index_books_on_isbn", unique: true
+    t.index ["title"], name: "index_books_on_title", unique: true
+  end
 
   create_table "jwt_denylists", force: :cascade do |t|
     t.string "jti"
@@ -43,5 +69,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_04_211153) do
     t.index ["user_role_id"], name: "index_users_on_user_role_id"
   end
 
+  add_foreign_key "book_borrowings", "books"
+  add_foreign_key "book_borrowings", "users"
   add_foreign_key "users", "user_roles"
 end

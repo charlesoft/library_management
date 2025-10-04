@@ -6,6 +6,7 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
   belongs_to :user_role
+  has_many :book_borrowings, dependent: :nullify
 
   validates :user_role_id, presence: true
   validates :email, presence: true, uniqueness: true
