@@ -12,6 +12,7 @@ Rails.application.routes.draw do
         resource :member, only: [:show], controller: 'member'
       end
       resources :books, only: [:index, :create, :update, :destroy]
+      resources :user_roles, only: [:index]
       resources :books, only: [] do
         resources :book_borrowings, only: [:create]
       end
