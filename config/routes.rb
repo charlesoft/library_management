@@ -7,6 +7,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      namespace :dashboard do
+        resource :librarian, only: [:show], controller: 'librarian'
+        resource :member, only: [:show], controller: 'member'
+      end
       resources :books, only: [:index, :create, :update, :destroy]
       resources :books, only: [] do
         resources :book_borrowings, only: [:create]
@@ -19,6 +23,10 @@ Rails.application.routes.draw do
                    registrations: 'api/v1/registrations',
                    sessions: 'api/v1/sessions'
                  }
+
+      devise_scope :user do
+        post 'auth', to: 'sessions#new' # route placeholder; not used in controller specs
+      end
     end
   end
 
