@@ -10,4 +10,12 @@ class Book < ApplicationRecord
   default_scope { order(created_at: :desc) }
   
   scope :search, ->(query) { where("title ILIKE :query OR author ILIKE :query OR genre ILIKE :query", query: "%#{query}%") }
+
+  def available_copies
+    total_copies - book_borrowings.where(returned_date: nil).count
+  end
+
+  def available?
+    self[:available] && available_copies > 0
+  end
 end

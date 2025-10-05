@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_04_231259) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_04_231259) do
     t.date "returned_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["book_id", "user_id"], name: "index_book_borrowings_on_book_user_active", unique: true, where: "(returned_date IS NULL)"
     t.index ["book_id"], name: "index_book_borrowings_on_book_id"
     t.index ["user_id"], name: "index_book_borrowings_on_user_id"
   end
@@ -34,6 +35,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_04_231259) do
     t.integer "total_copies", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "available", default: true, null: false
     t.index ["author"], name: "index_books_on_author"
     t.index ["genre"], name: "index_books_on_genre"
     t.index ["isbn"], name: "index_books_on_isbn", unique: true

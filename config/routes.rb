@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :books, only: [:index, :create, :update, :destroy]
+      resources :books, only: [] do
+        resources :book_borrowings, only: [:create]
+      end
+      patch 'book_borrowings/:id/return', to: 'book_borrowings#return_book'
       devise_for :users,
                  defaults: { format: :json },
                  path: 'auth',
