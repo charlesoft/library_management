@@ -7,3 +7,27 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+puts 'Seeding UserRoles...'
+librarian = UserRole.find_or_create_by!(name: 'librarian')
+member = UserRole.find_or_create_by!(name: 'member')
+
+puts 'Seeding Users...'
+users = [
+  { name: 'Alice Admin', email: 'alice@example.com', role: librarian },
+  { name: 'Bob Member', email: 'bob@example.com', role: member },
+  { name: 'Carol Member', email: 'carol@example.com', role: member },
+  { name: 'Dave Member', email: 'dave@example.com', role: member },
+  { name: 'Eve Member', email: 'eve@example.com', role: member }
+]
+
+users.each do |user|
+  User.where(email: user[:email]).first_or_create!(
+    name: user[:name],
+    password: 'password123',
+    password_confirmation: 'password123',
+    user_role: user[:role]
+  )
+end
+
+puts 'Seeding completed.'
