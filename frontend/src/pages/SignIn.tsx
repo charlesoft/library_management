@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { signIn } from '../lib/api';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -15,7 +17,13 @@ export default function SignIn() {
       setError(body?.message || 'Login failed');
       return;
     }
-    window.location.href = '/';
+    // store role id for UI gating
+    try {
+      const body = await res.clone().json();
+      const roleId = body?.user?.user_role_id;
+      if (roleId != null) localStorage.setItem('currentUserRoleId', String(roleId));
+    } catch (_) {}
+    navigate('/');
   }
 
   return (

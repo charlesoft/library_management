@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchUserRoles, signUp } from '../lib/api';
 
 type Role = { id: number; name: string };
@@ -11,6 +12,7 @@ export default function SignUp() {
   const [roleId, setRoleId] = useState<number | ''>('');
   const [roles, setRoles] = useState<Role[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUserRoles().then(setRoles).catch(() => setRoles([]));
@@ -26,7 +28,12 @@ export default function SignUp() {
       setError(body?.errors?.join(', ') || 'Sign up failed');
       return;
     }
-    window.location.href = '/';
+    try {
+      const body = await res.clone().json();
+      const roleId = body?.user?.user_role_id;
+      if (roleId != null) localStorage.setItem('currentUserRoleId', String(roleId));
+    } catch (_) {}
+    navigate('/');
   }
 
   return (

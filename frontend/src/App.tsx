@@ -3,6 +3,9 @@ import './index.css'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import { apiFetch } from './lib/api'
+import Books from './pages/Books'
+import NewBook from './pages/NewBook'
+import EditBook from './pages/EditBook'
 
 function App() {
   const isLoggedIn = Boolean(localStorage.getItem('jwt'))
@@ -33,7 +36,9 @@ function App() {
       <Routes>
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/" element={<div className="p-6">Welcome</div>} />
+        <Route path="/" element={<Books />} />
+        <Route path="/books/new" element={<NewBook />} />
+        <Route path="/books/:id/edit" element={<EditBook />} />
       </Routes>
     </BrowserRouter>
   )
