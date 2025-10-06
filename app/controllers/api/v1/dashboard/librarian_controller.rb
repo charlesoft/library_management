@@ -6,6 +6,18 @@ module Api
         before_action :authorize_librarian!
 
         def show
+          borrowings = BookBorrowing.includes(:book)
+          .where(user_id: current_user.id)
+
+          data = borrowings.map do |bb|
+            {
+              borrowing_id: bb.id,
+              book: bb.book,
+              due_date: bb.due_date,
+              overdue: bb.returned_date.nil? && bb.due_date < Date.current
+            }
+          end
+          
           total_books = Book.count
           total_borrowed = BookBorrowing.where(returned_date: nil).count
 
@@ -19,7 +31,8 @@ module Api
           render json: {
             total_books: total_books,
             total_borrowed: total_borrowed,
-            books_due_today: books_due_today
+            books_due_today: books_due_today,
+            borrowings: data
           }
         end
 

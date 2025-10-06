@@ -30,6 +30,10 @@ module Api
           }
         }
       end
+      
+      def show
+        render json: @book
+      end
 
       def create
         book = Book.new(book_params)
@@ -49,7 +53,7 @@ module Api
       end
 
       def destroy
-        @book.destroy
+        @book.delete!
         head :no_content
       end
 
