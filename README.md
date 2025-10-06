@@ -85,25 +85,89 @@ Auth endpoints:
 
 ## API overview (selected)
 
-Books
-- `GET /api/v1/books?q&limit&offset` → `{ data: Book[], pagination: { limit, offset, count } }`
-- `GET /api/v1/books/:id` → `{ data: { book, book_borrowings, current_user_has_active_borrowing } }`
-  - `book_borrowings[]`: `{ id, book_id, borrowing_date, due_date, returned_date, user_name }`
+### Books
+- `GET /api/v1/books?q&limit&offset`
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Sample Book 1",
+      "author": "Author",
+      "genre": "Fiction",
+      "isbn": "ISBN-001001",
+      "total_copies": 5,
+      "available": true
+    }
+  ],
+  "pagination": { "limit": 10, "offset": 0, "count": 10 }
+}
+```
+
+- `GET /api/v1/books/:id`
+```json
+{
+  "data": {
+    "book": { "id": 1, "title": "Sample Book 1", "author": "Author", "genre": "Fiction", "isbn": "ISBN-001001", "total_copies": 5, "available": true },
+    "book_borrowings": [
+      { "id": 10, "book_id": 1, "borrowing_date": "2025-10-01", "due_date": "2025-10-15", "returned_date": null, "user_name": "Bob Member" }
+    ],
+    "current_user_has_active_borrowing": false
+  }
+}
+```
+
 - `POST /api/v1/books` (librarian)
 - `PATCH /api/v1/books/:id` (librarian)
 - `DELETE /api/v1/books/:id` (librarian)
 
-Borrowings
-- Create: `POST /api/v1/books/:book_id/book_borrowings` (body `{ book_borrowing: { due_date } }`)
-- Mark returned: `PATCH /api/v1/book_borrowings/:id/return`
+### Borrowings
+- Create: `POST /api/v1/books/:book_id/book_borrowings`
+```json
+{ "book_borrowing": { "due_date": "2025-10-15" } }
+```
 
-Dashboards
-- Member: `GET /api/v1/dashboard/member` → `{ borrowings, overdue_borrowings }`
-  - `borrowings[]`: `{ borrowing_id, book, due_date, returned_date, overdue }`
-- Librarian: `GET /api/v1/dashboard/librarian` → `{ total_books, total_borrowed, books_due_today, overdue_members, borrowings }`
-  - `total_books` is the sum of all `books.total_copies`
-  - `books_due_today[]`: `{ book, borrowing: { id, user, due_date, returned_date } }`
-  - `overdue_members[]`: `{ user, count, books: [{ book, due_date, returned_date }] }`
+- Mark returned: `PATCH /api/v1/book_borrowings/:id/return`
+```json
+{ "id": 10, "book_id": 1, "user_id": 2, "borrowing_date": "2025-10-01", "due_date": "2025-10-15", "returned_date": "2025-10-10" }
+```
+
+### Dashboards
+- Member: `GET /api/v1/dashboard/member`
+```json
+{
+  "borrowings": [
+    { "borrowing_id": 1, "book": { "id": 1, "title": "B1" }, "due_date": "2025-10-05", "returned_date": null, "overdue": true }
+  ],
+  "overdue_borrowings": [
+    { "borrowing_id": 1, "book": { "id": 1, "title": "B1" }, "due_date": "2025-10-05", "returned_date": null, "overdue": true }
+  ]
+}
+```
+
+- Librarian: `GET /api/v1/dashboard/librarian`
+```json
+{
+  "total_books": 42,
+  "total_borrowed": 12,
+  "books_due_today": [
+    { "book": { "id": 1, "title": "B1" }, "borrowing": { "id": 10, "user": { "id": 2, "name": "Bob", "email": "bob@example.com" }, "due_date": "2025-10-06", "returned_date": null } }
+  ],
+  "overdue_members": [
+    {
+      "user": { "id": 3, "name": "Carol", "email": "carol@example.com" },
+      "count": 2,
+      "books": [
+        { "book": { "id": 5, "title": "B5" }, "due_date": "2025-10-01", "returned_date": null },
+        { "book": { "id": 7, "title": "B7" }, "due_date": "2025-09-29", "returned_date": "2025-10-03" }
+      ]
+    }
+  ],
+  "borrowings": [
+    { "borrowing_id": 20, "book": { "id": 9, "title": "B9" }, "due_date": "2025-10-10", "overdue": false }
+  ]
+}
+```
 
 ## Running tests
 Use RSpec:
