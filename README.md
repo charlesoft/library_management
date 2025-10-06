@@ -46,7 +46,7 @@ bin/rails s
 ```
 
 ### Seed data
-The seed script creates roles, users, 20 books, and example borrowings. You can as
+The seed script creates roles, users, 20 books, and example borrowings. You can add as
 many seed data you prefer.
 
 Users (password: `password123`):
