@@ -6,6 +6,9 @@ import { apiFetch } from './lib/api'
 import Books from './pages/Books'
 import NewBook from './pages/NewBook'
 import EditBook from './pages/EditBook'
+import BookShow from './pages/BookShow'
+import DashboardLibrarian from './pages/DashboardLibrarian'
+import DashboardMember from './pages/DashboardMember'
 
 function App() {
   const isLoggedIn = Boolean(localStorage.getItem('jwt'))
@@ -39,6 +42,9 @@ function App() {
         <Route path="/" element={<Books />} />
         <Route path="/books/new" element={<NewBook />} />
         <Route path="/books/:id/edit" element={<EditBook />} />
+        <Route path="/books/:id" element={<BookShow />} />
+        <Route path="/dashboard/librarian" element={<DashboardLibrarian />} />
+        <Route path="/dashboard/member" element={<DashboardMember />} />
       </Routes>
     </BrowserRouter>
   )

@@ -7,6 +7,7 @@ export type Book = {
   genre: string;
   isbn: string;
   total_copies: number;
+  available?: boolean;
 };
 
 function getAuthToken(): string | null {
@@ -61,6 +62,12 @@ export async function fetchBooks(params: { q?: string; limit: number; offset: nu
   return res.json();
 }
 
+export async function fetchBook(id: number): Promise<Book> {
+  const res = await apiFetch(`/books/${id}`);
+  if (!res.ok) throw new Error('Failed to load book');
+  return res.json();
+}
+
 export async function createBook(payload: Omit<Book, 'id'>) {
   return apiFetch('/books', { method: 'POST', body: JSON.stringify({ book: payload }) });
 }
@@ -71,6 +78,25 @@ export async function updateBook(id: number, payload: Partial<Omit<Book, 'id'>>)
 
 export async function deleteBook(id: number) {
   return apiFetch(`/books/${id}`, { method: 'DELETE' });
+}
+
+export async function createBorrowing(bookId: number, dueDate: string) {
+  return apiFetch(`/books/${bookId}/book_borrowings`, {
+    method: 'POST',
+    body: JSON.stringify({ book_borrowing: { due_date: dueDate } })
+  });
+}
+
+export async function fetchLibrarianDashboard() {
+  const res = await apiFetch('/dashboard/librarian');
+  if (!res.ok) throw new Error('Failed to load librarian dashboard');
+  return res.json();
+}
+
+export async function fetchMemberDashboard() {
+  const res = await apiFetch('/dashboard/member');
+  if (!res.ok) throw new Error('Failed to load member dashboard');
+  return res.json();
 }
 
 

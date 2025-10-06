@@ -1,28 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserRoles, signUp } from '../lib/api';
-
-type Role = { id: number; name: string };
+import { signUp } from '../lib/api';
 
 export default function SignUp() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [roleId, setRoleId] = useState<number | ''>('');
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roleId] = useState<number | ''>('');
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchUserRoles().then(setRoles).catch(() => setRoles([]));
-  }, []);
+  useEffect(() => {}, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!roleId) { setError('Please select a role'); return; }
-    const res = await signUp({ name, email, password, password_confirmation: passwordConfirmation, user_role_id: roleId });
+    const res = await signUp({ name, email, password, password_confirmation: passwordConfirmation, user_role_id: roleId as any });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       setError(body?.errors?.join(', ') || 'Sign up failed');
@@ -49,11 +43,7 @@ export default function SignUp() {
         <input className="w-full border rounded p-2 mb-4" value={password} onChange={e => setPassword(e.target.value)} type="password" required />
         <label className="block mb-2 text-sm">Confirm Password</label>
         <input className="w-full border rounded p-2 mb-4" value={passwordConfirmation} onChange={e => setPasswordConfirmation(e.target.value)} type="password" required />
-        <label className="block mb-2 text-sm">Role</label>
-        <select className="w-full border rounded p-2 mb-4" value={roleId} onChange={e => setRoleId(Number(e.target.value))} required>
-          <option value="">Select role</option>
-          {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-        </select>
+        {/* Role selection removed - defaults to member server-side */}
         <button className="w-full bg-blue-600 text-white py-2 rounded">Create Account</button>
         <div className="mt-3 text-sm">
           Already have an account? <a className="text-blue-600" href="/signin">Sign in</a>

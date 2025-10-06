@@ -10,8 +10,7 @@ RSpec.describe 'Auth API', type: :request do
           name: 'Alice',
           email: 'alice@example.com',
           password: 'password123',
-          password_confirmation: 'password123',
-          user_role_id: member_role.id
+          password_confirmation: 'password123'
         }
       }
 
@@ -34,8 +33,10 @@ RSpec.describe 'Auth API', type: :request do
       
       params = {
         user: {
-          name: 'Alice', email: 'alice@example.com', password: 'password123',
-          password_confirmation: 'password123', user_role_id: member_role.id
+          name: 'Alice', 
+          email: 'alice@example.com', 
+          password: 'password123',
+          password_confirmation: 'password123'
         }
       }
 
@@ -56,6 +57,7 @@ RSpec.describe 'Auth API', type: :request do
 
     it 'logs in and returns JWT' do
       params = { user: { email: 'bob@example.com', password: 'password123' } }
+      
       post '/api/v1/auth/sign_in', params: params, as: :json
 
       expect(response).to have_http_status(:ok)
@@ -64,6 +66,7 @@ RSpec.describe 'Auth API', type: :request do
 
     it 'returns an error if the email or password is incorrect' do
       params = { user: { email: 'bob@example.com', password: 'wrong_password' } }
+      
       post '/api/v1/auth/sign_in', params: params, as: :json
 
       expect(response).to have_http_status(:unauthorized)
@@ -76,8 +79,10 @@ RSpec.describe 'Auth API', type: :request do
       # Sign up to obtain a token
       post '/api/v1/auth', params: {
         user: {
-          name: 'Carol', email: 'carol@example.com', password: 'password123',
-          password_confirmation: 'password123', user_role_id: member_role.id
+          name: 'Carol', 
+          email: 'carol@example.com', 
+          password: 'password123',
+          password_confirmation: 'password123'
         }
       }, as: :json
 

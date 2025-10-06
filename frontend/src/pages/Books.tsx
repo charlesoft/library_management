@@ -56,7 +56,7 @@ export default function Books() {
         <tbody>
           {books.map(b => (
             <tr key={b.id}>
-              <td className="p-2 border">{b.title}</td>
+              <td className="p-2 border"><a className="text-blue-600" href={`/books/${b.id}`}>{b.title}</a></td>
               <td className="p-2 border">{b.author}</td>
               <td className="p-2 border">{b.genre}</td>
               <td className="p-2 border">{b.isbn}</td>
