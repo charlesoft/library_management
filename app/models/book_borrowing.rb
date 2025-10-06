@@ -12,6 +12,15 @@ class BookBorrowing < ApplicationRecord
 
   after_create :decrement_book_availability
   after_update :update_book_availability_if_returned
+  
+  
+  def self.by_user(user)
+    if user.user_role.name == 'member'
+      includes(:user).where(user_id: user.id)
+    elsif user.user_role.name == 'librarian'
+      includes(:user)
+    end
+  end
 
   private
 

@@ -27,17 +27,7 @@ module Api
       end
       
       def show
-        borrowings = BookBorrowing
-        
-        if current_user.user_role.name == 'member'
-          borrowings = @book.book_borrowings.includes(:user).where(user_id: current_user.id)
-        elsif current_user.user_role.name == 'librarian'
-          borrowings = @book.book_borrowings.includes(:user)
-        end
-        
-      current_user_has_active_borrowing = current_user.present? ?
-        borrowings.where(user_id: current_user.id, returned_date: nil).exists? : false
-        
+        borrowings = @book.book_borrowings.by_user(current_user)
         borrowings = borrowings.map do |bb|
           {
             id: bb.id,
@@ -50,7 +40,11 @@ module Api
         end
 
         render json: {
-          data: { book: @book, book_borrowings: borrowings, current_user_has_active_borrowing: current_user_has_active_borrowing }
+          data: { 
+            book: @book, 
+            book_borrowings: borrowings, 
+            current_user_has_active_borrowing: current_user.has_active_borrowing? 
+          }
         }
       end
 

@@ -12,4 +12,9 @@ class User < ApplicationRecord
   validates :user_role_id, presence: true
   validates :email, presence: true, uniqueness: true
   validates :password, presence: true, confirmation: true
+  
+  
+  def has_active_borrowing?
+    book_borrowings.where(returned_date: nil).exists?
+  end
 end
