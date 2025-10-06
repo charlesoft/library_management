@@ -118,8 +118,66 @@ Auth endpoints:
 ```
 
 - `POST /api/v1/books` (librarian)
+Request
+```json
+{
+  "book": {
+    "title": "New Book",
+    "author": "Author Name",
+    "genre": "Fiction",
+    "isbn": "ISBN-NEW-001",
+    "total_copies": 5
+  }
+}
+```
+Success (201 Created)
+```json
+{
+  "id": 123,
+  "title": "New Book",
+  "author": "Author Name",
+  "genre": "Fiction",
+  "isbn": "ISBN-NEW-001",
+  "total_copies": 5,
+  "available": true,
+  "created_at": "2025-10-06T21:00:00Z",
+  "updated_at": "2025-10-06T21:00:00Z"
+}
+```
+Error (422)
+```json
+{ "errors": ["Isbn has already been taken"] }
+```
+
 - `PATCH /api/v1/books/:id` (librarian)
+Request
+```json
+{ "book": { "title": "Updated Title", "total_copies": 8 } }
+```
+Success (200 OK)
+```json
+{
+  "id": 123,
+  "title": "Updated Title",
+  "author": "Author Name",
+  "genre": "Fiction",
+  "isbn": "ISBN-NEW-001",
+  "total_copies": 8,
+  "available": true,
+  "created_at": "2025-10-06T21:00:00Z",
+  "updated_at": "2025-10-06T21:05:00Z"
+}
+```
+Error (422)
+```json
+{ "errors": ["Title can't be blank"] }
+```
+
 - `DELETE /api/v1/books/:id` (librarian)
+Success (204 No Content)
+```
+<no body>
+```
 
 ### Borrowings
 - Create: `POST /api/v1/books/:book_id/book_borrowings`
