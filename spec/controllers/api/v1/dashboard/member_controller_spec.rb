@@ -11,16 +11,35 @@ RSpec.describe Api::V1::Dashboard::MemberController, type: :controller do
     member = User.create!(name: 'M', email: 'mem3@example.com', password: 'password123', password_confirmation: 'password123', user_role: member_role)
     book1 = Book.create!(title: 'B1', author: 'A', genre: 'G', isbn: 'MB-1', total_copies: 2)
     book2 = Book.create!(title: 'B2', author: 'A', genre: 'G', isbn: 'MB-2', total_copies: 2)
-    BookBorrowing.create!(book: book1, user: member, borrowing_date: Date.current - 3.days, due_date: Date.current - 1.day)
-    BookBorrowing.create!(book: book2, user: member, borrowing_date: Date.current - 1.day, due_date: Date.current + 10.days)
+    bb1 = BookBorrowing.create!(book: book1, user: member, borrowing_date: Date.current - 3.days, due_date: Date.current - 1.day)
+    bb2 = BookBorrowing.create!(book: book2, user: member, borrowing_date: Date.current - 1.day, due_date: Date.current + 10.days)
 
     sign_in member
+    
     get :show
+    
     expect(response).to have_http_status(:ok)
+    
     body = JSON.parse(response.body)
     expect(body['borrowings'].size).to eq(2)
-    overdue_flags = body['borrowings'].map { |b| b['overdue'] }
-    expect(overdue_flags).to include(true, false)
+    expect(body['borrowings']).to eq(
+      [
+        {
+          'borrowing_id' => bb1.id,
+          'book' => book1.as_json,
+          'due_date' => (Date.current - 1.day).to_s,
+          'returned_date' => nil,
+          'overdue' => true
+        },
+        {
+          'borrowing_id' => bb2.id,
+          'book' => book2.as_json,
+          'due_date' => (Date.current + 10.days).to_s,
+          'returned_date' => nil,
+          'overdue' => false
+        }
+      ]
+    )
   end
 end
 
