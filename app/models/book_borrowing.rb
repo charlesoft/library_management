@@ -21,6 +21,10 @@ class BookBorrowing < ApplicationRecord
       includes(:user)
     end
   end
+  
+  def is_overdue?
+    (self.returned_date.nil? && self.due_date < Date.current) || (self.returned_date.present? && self.due_date < self.returned_date)
+  end
 
   private
 
