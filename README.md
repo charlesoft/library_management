@@ -80,8 +80,61 @@ npm run dev
 
 Auth endpoints:
 - Sign up: `POST /api/v1/auth` (body `{ user: { name, email, password, password_confirmation } }`)
+  - By default the user registered is a 'member'. If wish to have more librarian users,
+  please add more records for it in the seed file.
 - Sign in: `POST /api/v1/auth/sign_in` (body `{ user: { email, password } }`)
 - Sign out: `DELETE /api/v1/auth/sign_out`
+
+### Sign Up
+Request
+```json
+{
+  "user": {
+    "name": "Alice",
+    "email": "alice@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }
+}
+```
+Success (201 Created)
+```json
+{
+  "user": { "id": 1, "name": "Alice", "email": "alice@example.com", "user_role_id": 2 },
+  "message": "Signed up successfully"
+}
+```
+Response headers
+```
+Authorization: Bearer <JWT>
+```
+
+### Sign In
+Request
+```json
+{ "user": { "email": "alice@example.com", "password": "password123" } }
+```
+Success (200 OK)
+```json
+{
+  "user": { "id": 1, "name": "Alice", "email": "alice@example.com", "user_role_id": 2 },
+  "message": "Logged in successfully"
+}
+```
+Response headers
+```
+Authorization: Bearer <JWT>
+```
+
+### Sign Out
+Request
+```
+DELETE /api/v1/auth/sign_out
+```
+Success (200 OK)
+```json
+{ "message": "Logged out successfully" }
+```
 
 ## API overview (selected)
 
