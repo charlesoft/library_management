@@ -1,24 +1,148 @@
-# README
+# Library Management (Rails API + React)
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A simple library management system with:
+- Rails 7.1 JSON API (PostgreSQL, Devise + JWT)
+- React + Vite frontend (`frontend/`)
 
-Things you may want to cover:
+## Stack
+- Ruby 3.2.2
+- Rails 7.1
+- PostgreSQL 13+
+- Node 18+ and npm 9+
 
-* Ruby version
+## Project layout
+- Backend (Rails API): root directory
+- Frontend (React + Vite): `frontend/`
 
-* System dependencies
+## Prerequisites
+- Ruby 3.2.2 (rbenv, asdf, or your preferred Ruby manager)
+- Bundler: `gem install bundler`
+- PostgreSQL running locally (defaults: host `localhost`, port `5432`)
+- Node 18+ and npm 9+
 
-* Configuration
+Environment variables used by Rails (optional, with sensible defaults):
+- `PGHOST` (default `localhost`)
+- `PGPORT` (default `5432`)
+- `PGUSER` (default current OS user)
+- `PGPASSWORD` (if your Postgres requires a password)
 
-* Database creation
+## Backend setup (Rails API)
+1) Install gems
+```bash
+bundle install
+```
 
-* Database initialization
+2) Setup database (create, migrate, seed)
+```bash
+bin/rails db:setup
+# or explicitly
+bin/rails db:create db:migrate db:seed
+```
 
-* How to run the test suite
+3) Run API server
+```bash
+bin/rails s
+# API will be available at http://localhost:3000
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+### Seed data
+The seed script creates roles, users, 20 books, and example borrowings. You can as
+many seed data you prefer.
 
-* Deployment instructions
+Users (password: `password123`):
+- Librarian: `alice@example.com`
+- Members: `bob@example.com`, `carol@example.com`, `dave@example.com`, `eve@example.com`
 
-* ...
+## Frontend setup (React + Vite)
+1) Install dependencies
+```bash
+cd frontend
+npm install
+```
+
+2) Configure API base (optional)
+
+The frontend uses `VITE_API_BASE` (default `http://localhost:3000/api/v1`). Create `.env` if you want to override:
+```bash
+echo 'VITE_API_BASE=http://localhost:3000/api/v1' > frontend/.env
+```
+
+3) Run dev server
+```bash
+npm run dev
+# App will be available at http://localhost:5173
+```
+
+## Authentication
+- Devise + JWT; tokens are returned in the `Authorization` response header.
+- Frontend stores the token in `localStorage` under `jwt` and keeps basic user info (`currentUserId`, `currentUserName`, `currentUserRoleId`).
+- A custom `auth:changed` event keeps the app header reactive after sign-in/sign-up/sign-out.
+
+Auth endpoints:
+- Sign up: `POST /api/v1/auth` (body `{ user: { name, email, password, password_confirmation } }`)
+- Sign in: `POST /api/v1/auth/sign_in` (body `{ user: { email, password } }`)
+- Sign out: `DELETE /api/v1/auth/sign_out`
+
+## API overview (selected)
+
+Books
+- `GET /api/v1/books?q&limit&offset` → `{ data: Book[], pagination: { limit, offset, count } }`
+- `GET /api/v1/books/:id` → `{ data: { book, book_borrowings, current_user_has_active_borrowing } }`
+  - `book_borrowings[]`: `{ id, book_id, borrowing_date, due_date, returned_date, user_name }`
+- `POST /api/v1/books` (librarian)
+- `PATCH /api/v1/books/:id` (librarian)
+- `DELETE /api/v1/books/:id` (librarian)
+
+Borrowings
+- Create: `POST /api/v1/books/:book_id/book_borrowings` (body `{ book_borrowing: { due_date } }`)
+- Mark returned: `PATCH /api/v1/book_borrowings/:id/return`
+
+Dashboards
+- Member: `GET /api/v1/dashboard/member` → `{ borrowings, overdue_borrowings }`
+  - `borrowings[]`: `{ borrowing_id, book, due_date, returned_date, overdue }`
+- Librarian: `GET /api/v1/dashboard/librarian` → `{ total_books, total_borrowed, books_due_today, overdue_members, borrowings }`
+  - `total_books` is the sum of all `books.total_copies`
+  - `books_due_today[]`: `{ book, borrowing: { id, user, due_date, returned_date } }`
+  - `overdue_members[]`: `{ user, count, books: [{ book, due_date, returned_date }] }`
+
+## Running tests
+Use RSpec:
+```bash
+bundle exec rspec
+
+# run a specific file
+bundle exec rspec spec/controllers/api/v1/dashboard/member_controller_spec.rb
+```
+
+## Development notes
+- CORS is enabled for the API (see `config/initializers/cors.rb`).
+- Soft-delete flags exist on several tables (`deleted`, `deleted_at`).
+- Books have `available` computed based on outstanding borrowings; librarians can mark borrowings returned.
+- UI niceties: formatted dates (MM/DD/YYYY), clickable titles, account menu, and dashboard tabs.
+
+## Common commands
+```bash
+# Reset the dev database and reseed
+bin/rails db:drop db:create db:migrate db:seed
+
+# Start API
+bin/rails s
+
+# Start frontend
+cd frontend && npm run dev
+```
+
+## Troubleshooting
+Postgres “database is being accessed by other users” when dropping:
+```sql
+-- connect to the postgres db (not the app db), then:
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname IN ('library_management_development','library_management_test')
+  AND pid <> pg_backend_pid();
+```
+
+Missing JWTs in responses: ensure Devise and devise-jwt are configured and you’re hitting the `/api/v1/auth/sign_in` endpoint; the token is returned in the `Authorization` header.
+
+Frontend cannot reach API: verify `VITE_API_BASE` and that Rails is running on `http://localhost:3000`.
+
