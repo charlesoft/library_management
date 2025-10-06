@@ -1,4 +1,5 @@
 class BookBorrowing < ApplicationRecord
+  include Indestructible
   belongs_to :book
   belongs_to :user
 

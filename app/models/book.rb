@@ -1,5 +1,6 @@
 class Book < ApplicationRecord
-  has_many :book_borrowings, dependent: :restrict_with_exception
+  include Indestructible
+  has_many :book_borrowings
 
   validates :title, presence: true
   validates :author, presence: true

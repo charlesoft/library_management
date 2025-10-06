@@ -3,9 +3,6 @@ module Api
     class BooksController < ApplicationController
       before_action :authenticate_user!
       before_action :set_book, only: [:show, :update, :destroy]
-      def show
-        render json: @book
-      end
       before_action :authorize_librarian!, only: [:create, :update, :destroy]
 
       def index

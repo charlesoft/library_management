@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_05_231239) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
     t.date "returned_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "deleted", default: false, null: false
+    t.datetime "deleted_at"
     t.index ["book_id", "user_id"], name: "index_book_borrowings_on_book_user_active", unique: true, where: "(returned_date IS NULL)"
     t.index ["book_id"], name: "index_book_borrowings_on_book_id"
     t.index ["user_id"], name: "index_book_borrowings_on_user_id"
@@ -36,6 +38,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "available", default: true, null: false
+    t.boolean "deleted", default: false, null: false
+    t.datetime "deleted_at"
     t.index ["author"], name: "index_books_on_author"
     t.index ["genre"], name: "index_books_on_genre"
     t.index ["isbn"], name: "index_books_on_isbn", unique: true
@@ -47,6 +51,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
     t.datetime "exp"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "deleted", default: false, null: false
+    t.datetime "deleted_at"
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
   end
 
@@ -54,6 +60,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
     t.string "name", default: "member", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "deleted", default: false, null: false
+    t.datetime "deleted_at"
   end
 
   create_table "users", force: :cascade do |t|
@@ -66,6 +74,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_05_191844) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_role_id", null: false
+    t.boolean "deleted", default: false, null: false
+    t.datetime "deleted_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["user_role_id"], name: "index_users_on_user_role_id"

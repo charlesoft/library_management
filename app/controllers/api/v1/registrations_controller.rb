@@ -5,7 +5,8 @@ module Api
 
       def create
         build_resource(sign_up_params)
-        
+        resource.user_role = UserRole.find_by(name: 'member')
+
         if resource.save
           sign_up(resource_name, resource)
           render json: { user: resource, message: 'Signed up successfully' }, status: :created
@@ -17,7 +18,7 @@ module Api
       private
 
       def sign_up_params
-        params.require(:user).permit(:name, :email, :password, :password_confirmation, :user_role_id)
+        params.require(:user).permit(:name, :email, :password, :password_confirmation)
       end
     end
   end

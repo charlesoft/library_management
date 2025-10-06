@@ -1,5 +1,6 @@
 class UserRole < ApplicationRecord
-  has_many :users, dependent: :restrict_with_exception
+  include Indestructible
+  has_many :users
 
   validates :name, presence: true, inclusion: { in: %w[librarian member] }
 end
