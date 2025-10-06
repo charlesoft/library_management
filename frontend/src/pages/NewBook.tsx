@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { apiFetch } from '../lib/api';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function NewBook() {
   const navigate = useNavigate();
@@ -33,7 +33,10 @@ export default function NewBook() {
 
   return (
     <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">New Book</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-semibold">New Book</h1>
+        <Link to="/" className="text-blue-600">Home</Link>
+      </div>
       {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
       <form onSubmit={onSubmit} className="space-y-3">
         <input className="w-full border rounded p-2" placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required />

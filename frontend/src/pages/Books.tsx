@@ -10,6 +10,7 @@ export default function Books() {
   const [count, setCount] = useState(0);
   const limit = 10;
   const isLibrarian = localStorage.getItem('currentUserRoleId') === '1' || localStorage.getItem('currentUserRole') === 'librarian';
+  const isLoggedIn = Boolean(localStorage.getItem('jwt'));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,9 +38,19 @@ export default function Books() {
           onChange={(e) => { setPage(1); setQ(e.target.value); }}
         />
         </div>
-        {isLibrarian && (
-          <a href="/books/new" className="px-3 py-2 bg-blue-600 text-white rounded">New Book</a>
-        )}
+        <div className="flex items-center gap-2">
+          {isLoggedIn && (
+            <button
+              className="px-3 py-2 border rounded"
+              onClick={() => navigate(isLibrarian ? '/dashboard/librarian' : '/dashboard/member')}
+            >
+              My Dashboard
+            </button>
+          )}
+          {isLibrarian && (
+            <a href="/books/new" className="px-3 py-2 bg-blue-600 text-white rounded">New Book</a>
+          )}
+        </div>
       </div>
 
       <table className="w-full border text-sm">
@@ -49,7 +60,7 @@ export default function Books() {
             <th className="p-2 border">Author</th>
             <th className="p-2 border">Genre</th>
             <th className="p-2 border">ISBN</th>
-            <th className="p-2 border text-right">Total Copies</th>
+            <th className="p-2 border">Total Copies</th>
             {isLibrarian && <th className="p-2 border text-center">Actions</th>}
           </tr>
         </thead>
@@ -57,10 +68,10 @@ export default function Books() {
           {books.map(b => (
             <tr key={b.id}>
               <td className="p-2 border"><a className="text-blue-600" href={`/books/${b.id}`}>{b.title}</a></td>
-              <td className="p-2 border">{b.author}</td>
-              <td className="p-2 border">{b.genre}</td>
-              <td className="p-2 border">{b.isbn}</td>
-              <td className="p-2 border text-right">{b.total_copies}</td>
+              <td className="p-2 border text-center">{b.author}</td>
+              <td className="p-2 border text-center">{b.genre}</td>
+              <td className="p-2 border text-center">{b.isbn}</td>
+              <td className="p-2 border text-center">{b.total_copies}</td>
               {isLibrarian && (
                 <td className="p-2 border">
                   <div className="flex w-full items-center justify-between gap-2">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { apiFetch, updateBook } from '../lib/api';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 export default function EditBook() {
   const navigate = useNavigate();
@@ -36,7 +36,10 @@ export default function EditBook() {
 
   return (
     <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Edit Book</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-semibold">Edit Book</h1>
+        <Link to="/" className="text-blue-600">Home</Link>
+      </div>
       {error && <div className="mb-3 text-sm text-red-600">{error}</div>}
       <form onSubmit={onSubmit} className="space-y-3">
         <input className="w-full border rounded p-2" placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required />

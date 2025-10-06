@@ -25,7 +25,9 @@ export default function SignUp() {
     try {
       const body = await res.clone().json();
       const roleId = body?.user?.user_role_id;
+      const userId = body?.user?.id;
       if (roleId != null) localStorage.setItem('currentUserRoleId', String(roleId));
+      if (userId != null) localStorage.setItem('currentUserId', String(userId));
     } catch (_) {}
     navigate('/');
   }

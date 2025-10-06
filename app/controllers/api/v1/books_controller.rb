@@ -12,10 +12,8 @@ module Api
           books = books.search(params[:q])
         end
 
-        limit = params[:limit].to_i
-        offset = params[:offset].to_i
-        limit = 20 if limit <= 0 || limit > 100
-        offset = 0 if offset < 0
+        limit = params[:limit].to_i || Book::DEFAULT_LIMIT
+        offset = params[:offset].to_i || Book::DEFAULT_OFFSET
 
         books = books.limit(limit).offset(offset)
         render json: {
@@ -29,7 +27,31 @@ module Api
       end
       
       def show
-        render json: @book
+        borrowings = BookBorrowing
+        
+        if current_user.user_role.name == 'member'
+          borrowings = @book.book_borrowings.includes(:user).where(user_id: current_user.id)
+        elsif current_user.user_role.name == 'librarian'
+          borrowings = @book.book_borrowings.includes(:user)
+        end
+        
+      current_user_has_active_borrowing = current_user.present? ?
+        borrowings.where(user_id: current_user.id, returned_date: nil).exists? : false
+        
+        borrowings = borrowings.map do |bb|
+          {
+            id: bb.id,
+            book_id: bb.book_id,
+            borrowing_date: bb.borrowing_date,
+            due_date: bb.due_date,
+            returned_date: bb.returned_date,
+            user_name: bb.user&.name
+          }
+        end
+
+        render json: {
+          data: { book: @book, book_borrowings: borrowings, current_user_has_active_borrowing: current_user_has_active_borrowing }
+        }
       end
 
       def create

@@ -10,6 +10,23 @@ export type Book = {
   available?: boolean;
 };
 
+export type BookBorrowing = {
+  id: number;
+  book_id: number;
+  borrowing_date: string;
+  due_date: string;
+  returned_date?: string | null;
+  user_name?: string | null;
+};
+
+export type BookShowResponse = {
+  data: {
+    book: Book;
+    book_borrowings: BookBorrowing[];
+    current_user_has_active_borrowing: boolean;
+  }
+};
+
 function getAuthToken(): string | null {
   return localStorage.getItem('jwt');
 }
@@ -62,7 +79,7 @@ export async function fetchBooks(params: { q?: string; limit: number; offset: nu
   return res.json();
 }
 
-export async function fetchBook(id: number): Promise<Book> {
+export async function fetchBook(id: number): Promise<BookShowResponse> {
   const res = await apiFetch(`/books/${id}`);
   if (!res.ok) throw new Error('Failed to load book');
   return res.json();
@@ -84,6 +101,12 @@ export async function createBorrowing(bookId: number, dueDate: string) {
   return apiFetch(`/books/${bookId}/book_borrowings`, {
     method: 'POST',
     body: JSON.stringify({ book_borrowing: { due_date: dueDate } })
+  });
+}
+
+export async function returnBorrowing(borrowingId: number) {
+  return apiFetch(`/book_borrowings/${borrowingId}/return`, {
+    method: 'PATCH'
   });
 }
 

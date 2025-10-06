@@ -8,6 +8,9 @@ class Book < ApplicationRecord
   validates :isbn, presence: true, uniqueness: true
   validates :total_copies, numericality: { greater_than_or_equal_to: 0 }
   
+  DEFAULT_LIMIT = 20
+  DEFAULT_OFFSET = 0
+  
   default_scope { order(created_at: :desc) }
   
   scope :search, ->(query) { where("title ILIKE :query OR author ILIKE :query OR genre ILIKE :query", query: "%#{query}%") }
