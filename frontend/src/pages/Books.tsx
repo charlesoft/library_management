@@ -7,10 +7,10 @@ export default function Books() {
   const [books, setBooks] = useState<Book[]>([]);
   const [q, setQ] = useState('');
   const [page, setPage] = useState(1);
-  const [count, setCount] = useState(0);
+  const [, setCount] = useState(0);
   const limit = 10;
   const isLibrarian = localStorage.getItem('currentUserRoleId') === '1' || localStorage.getItem('currentUserRole') === 'librarian';
-  const isLoggedIn = Boolean(localStorage.getItem('jwt'));
+  // const isLoggedIn = Boolean(localStorage.getItem('jwt'));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,14 +39,6 @@ export default function Books() {
         />
         </div>
         <div className="flex items-center gap-2">
-          {isLoggedIn && (
-            <button
-              className="px-3 py-2 border rounded"
-              onClick={() => navigate(isLibrarian ? '/dashboard/librarian' : '/dashboard/member')}
-            >
-              My Dashboard
-            </button>
-          )}
           {isLibrarian && (
             <a href="/books/new" className="px-3 py-2 bg-blue-600 text-white rounded">New Book</a>
           )}

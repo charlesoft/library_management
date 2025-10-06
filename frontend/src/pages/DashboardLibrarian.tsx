@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchLibrarianDashboard } from '../lib/api';
 import { Link } from 'react-router-dom';
+import { fetchLibrarianDashboard } from '../lib/api';
 import { formatDateMMDDYYYY } from '../lib/format';
 
 export default function DashboardLibrarian() {
@@ -17,12 +17,21 @@ export default function DashboardLibrarian() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Library Dashboard</h1>
-        <Link to="/" className="text-blue-600">Home</Link>
       </div>
       
       <div className="flex gap-2 mb-4">
-        <button className={`px-3 py-2 border rounded ${tab==='borrowings'?'bg-gray-100':''}`} onClick={() => setTab('borrowings')}>My Borrowings</button>
-        <button className={`px-3 py-2 border rounded ${tab==='stats'?'bg-gray-100':''}`} onClick={() => setTab('stats')}>Library Stats</button>
+        <button
+          className={`px-3 py-2 border rounded ${tab==='borrowings' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50'}`}
+          onClick={() => setTab('borrowings')}
+        >
+          My Borrowings
+        </button>
+        <button
+          className={`px-3 py-2 border rounded ${tab==='stats' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white hover:bg-gray-50'}`}
+          onClick={() => setTab('stats')}
+        >
+          Library Stats
+        </button>
       </div>
 
       {tab === 'borrowings' ? (
@@ -37,7 +46,7 @@ export default function DashboardLibrarian() {
           <tbody>
             {data.borrowings.map((bb: any) => (
               <tr key={bb.borrowing_id}>
-                <td className="p-2 border">{bb.book.title}</td>
+                <td className="p-2 border"><Link to={`/books/${bb.book.id}`} className="text-blue-600">{bb.book.title}</Link></td>
                 <td className="p-2 border">{formatDateMMDDYYYY(bb.due_date)}</td>
                 <td className="p-2 border">{bb.overdue ? 'Yes' : 'No'}</td>
               </tr>
@@ -72,7 +81,7 @@ export default function DashboardLibrarian() {
             <tbody>
               {data.books_due_today.map((row: any, idx: number) => (
                 <tr key={idx}>
-                  <td className="p-2 border text-center">{row.book.title}</td>
+                  <td className="p-2 border text-center"><Link to={`/books/${row.book.id}`} className="text-blue-600">{row.book.title}</Link></td>
                   <td className="p-2 border text-center">{row.borrowing.user.name} ({row.borrowing.user.email})</td>
                   <td className="p-2 border text-center">{formatDateMMDDYYYY(row.borrowing.due_date)}</td>
                 </tr>
