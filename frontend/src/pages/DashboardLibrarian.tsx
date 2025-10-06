@@ -5,6 +5,7 @@ import { formatDateMMDDYYYY } from '../lib/format';
 
 export default function DashboardLibrarian() {
   const [tab, setTab] = useState<'borrowings' | 'stats'>('borrowings');
+  const [statsTab, setStatsTab] = useState<'dueToday' | 'overdueMembers'>('dueToday');
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
@@ -69,25 +70,70 @@ export default function DashboardLibrarian() {
               <div className="text-2xl font-semibold">{data.books_due_today.length}</div>
             </div>
           </div>
-          <h2 className="text-lg font-semibold">Books Due Today</h2>
-          <table className="w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 border">Book</th>
-                <th className="p-2 border">User</th>
-                <th className="p-2 border">Due Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.books_due_today.map((row: any, idx: number) => (
-                <tr key={idx}>
-                  <td className="p-2 border text-center"><Link to={`/books/${row.book.id}`} className="text-blue-600">{row.book.title}</Link></td>
-                  <td className="p-2 border text-center">{row.borrowing.user.name} ({row.borrowing.user.email})</td>
-                  <td className="p-2 border text-center">{formatDateMMDDYYYY(row.borrowing.due_date)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div>
+            <div className="flex gap-2 mb-3">
+              <button
+                className={`px-3 py-2 border rounded ${statsTab==='dueToday' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50'}`}
+                onClick={() => setStatsTab('dueToday')}
+              >
+                Books Due Today
+              </button>
+              <button
+                className={`px-3 py-2 border rounded ${statsTab==='overdueMembers' ? 'bg-red-600 text-white border-red-600' : 'bg-white hover:bg-gray-50'}`}
+                onClick={() => setStatsTab('overdueMembers')}
+              >
+                Overdue Members
+              </button>
+            </div>
+
+            {statsTab === 'dueToday' ? (
+              <table className="w-full border text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 border">Book</th>
+                    <th className="p-2 border">User</th>
+                    <th className="p-2 border">Due Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.books_due_today.map((row: any, idx: number) => (
+                    <tr key={idx}>
+                      <td className="p-2 border text-center"><Link to={`/books/${row.book.id}`} className="text-blue-600">{row.book.title}</Link></td>
+                      <td className="p-2 border text-center">{row.borrowing.user.name} ({row.borrowing.user.email})</td>
+                      <td className="p-2 border text-center">{formatDateMMDDYYYY(row.borrowing.due_date)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full border text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 border">Member</th>
+                    <th className="p-2 border">Overdue Count</th>
+                    <th className="p-2 border">Books</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.overdue_members.map((row: any, idx: number) => (
+                    <tr key={idx}>
+                      <td className="p-2 border text-center">{row.user.name} ({row.user.email})</td>
+                      <td className="p-2 border text-center">{row.count}</td>
+                      <td className="p-2 border">
+                        <ul className="list-disc list-inside text-left">
+                          {row.books.map((it: any, j: number) => (
+                            <li key={j}>
+                              <Link to={`/books/${it.book.id}`} className="text-blue-600">{it.book.title}</Link> - due {formatDateMMDDYYYY(it.due_date)} - {it.returned_date ? `returned ${formatDateMMDDYYYY(it.returned_date)}` : 'not yet'}
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       )}
     </div>
